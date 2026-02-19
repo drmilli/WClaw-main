@@ -1,0 +1,25 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(bun --version:*)",
+      "Bash(where bun:*)",
+      "Bash(where node:*)",
+      "Bash(where npm:*)",
+      "Bash(npm install:*)",
+      "Bash(bun install)",
+      "Bash(dir:*)",
+      "Bash(powershell -Command \"Copy-Item ''c:\\\\Users\\\\Dell\\\\Downloads\\\\project\\\\WClaw-main\\\\.env.example'' ''c:\\\\Users\\\\Dell\\\\Downloads\\\\project\\\\WClaw-main\\\\.env''\")",
+      "Bash(powershell -Command \"Get-Location; Test-Path ''c:\\\\Users\\\\Dell\\\\Downloads\\\\project\\\\WClaw-main\\\\.env.example''\")",
+      "Bash(powershell -Command \"Copy-Item -Path ''c:\\\\Users\\\\Dell\\\\Downloads\\\\project\\\\WClaw-main\\\\.env.example'' -Destination ''c:\\\\Users\\\\Dell\\\\Downloads\\\\project\\\\WClaw-main\\\\.env''; Write-Host ''done''\")",
+      "Bash(bun test)",
+      "Bash(bun run status)",
+      "Bash(powershell -Command:*)",
+      "Bash(bun run scan:*)",
+      "Bash(curl:*)",
+      "WebFetch(domain:vibeclaw.dev)",
+      "Bash(bun add:*)",
+      "Bash(bun run settle:*)",
+      "Bash(bun run src/engine/backtest.ts:*)"
+    ]
+  }
+}
