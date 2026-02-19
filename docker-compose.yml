@@ -1,16 +1,41 @@
 services:
-  weatherclaw:
+  # Cron runner — executes scan/settle/status on schedule
+  weatherclaw-cron:
     build: .
     image: weatherclaw:latest
-    container_name: weatherclaw
+    container_name: weatherclaw-cron
     restart: unless-stopped
     env_file:
       - .env
     volumes:
-      # Persist SQLite database and logs across container restarts
-      - ./data:/app/data
+      - weatherclaw-data:/app/data
     logging:
       driver: json-file
       options:
         max-size: "10m"
         max-file: "3"
+
+  # Web dashboard — reads from shared SQLite, serves at port 3456
+  weatherclaw-web:
+    build: .
+    image: weatherclaw:latest
+    container_name: weatherclaw-web
+    restart: unless-stopped
+    env_file:
+      - .env
+    command: ["bun", "run", "src/commands/web.ts"]
+    ports:
+      - "3456:3456"
+    volumes:
+      - weatherclaw-data:/app/data
+    depends_on:
+      - weatherclaw-cron
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+volumes:
+  # Named volume so both containers share the same SQLite database
+  weatherclaw-data:
