@@ -30,6 +30,7 @@ export function calculateConsensus(
   bracketType: "above" | "below" | "between",
   bracketMin: number,
   bracketMax: number,
+  iconEnsemble?: EnsembleForecast | null,
 ): ConsensusResult | null {
   // GFS probability (required)
   const gfsProb = getModelProbability(gfsEnsemble, date, metric, bracketType, bracketMin, bracketMax);
@@ -39,6 +40,12 @@ export function calculateConsensus(
   let ecmwfProb: number | null = null;
   if (ecmwfEnsemble) {
     ecmwfProb = getModelProbability(ecmwfEnsemble, date, metric, bracketType, bracketMin, bracketMax);
+  }
+
+  // ICON probability (optional)
+  let iconProb: number | null = null;
+  if (iconEnsemble) {
+    iconProb = getModelProbability(iconEnsemble, date, metric, bracketType, bracketMin, bracketMax);
   }
 
   // NWS point forecast check (does NWS high fall in the bracket?)
@@ -69,6 +76,11 @@ export function calculateConsensus(
     if (ecmwfVote === gfsVote) modelsAgreeing++;
   }
 
+  if (iconProb !== null) {
+    const iconVote = iconProb >= probThreshold;
+    if (iconVote === gfsVote) modelsAgreeing++;
+  }
+
   if (nwsInBracket !== null) {
     if (nwsInBracket === gfsVote) modelsAgreeing++;
   }
@@ -87,10 +99,16 @@ export function calculateConsensus(
     totalWeight += 1.2;
   }
 
+  // ICON weight: 1.0
+  if (iconProb !== null) {
+    consensusProb += iconProb * 1.0;
+    totalWeight += 1.0;
+  }
+
   consensusProb /= totalWeight;
 
   // Determine confidence tier and Kelly multiplier
-  const totalModels = 1 + (ecmwfProb !== null ? 1 : 0) + (nwsInBracket !== null ? 1 : 0);
+  const totalModels = 1 + (ecmwfProb !== null ? 1 : 0) + (iconProb !== null ? 1 : 0) + (nwsInBracket !== null ? 1 : 0);
   const agreementRatio = modelsAgreeing / totalModels;
 
   let confidence: ConfidenceTier;

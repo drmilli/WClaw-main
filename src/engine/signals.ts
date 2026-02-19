@@ -7,6 +7,14 @@ import { calculateConsensus } from "./consensus.js";
 const MIN_VOLUME = 1000; // $1K minimum market volume
 const MIN_HOURS_TO_SETTLE = 2; // skip markets settling within 2 hours
 
+// Minimum edge required per confidence tier (higher confidence = lower bar)
+const TIER_MIN_EDGE: Record<string, number> = {
+  LOCK: 0.05,
+  STRONG: 0.08,
+  SAFE: 0.10,
+  "NEAR-SAFE": 0.15,
+};
+
 function getConfidence(edge: number, consensusConfidence?: string): Signal["confidence"] {
   if (consensusConfidence === "LOCK" || edge >= 0.25) return "LOCK";
   if (consensusConfidence === "STRONG" || edge >= 0.15) return "STRONG";
@@ -23,6 +31,7 @@ export function generateSignals(
   config: AppConfig,
   openPositions: Position[],
   ecmwfEnsembles?: Map<string, EnsembleForecast>,
+  iconEnsembles?: Map<string, EnsembleForecast>,
 ): Signal[] {
   const signals: Signal[] = [];
   const minEdge = config.minEdgePct / 100;
@@ -53,8 +62,9 @@ export function generateSignals(
     const gfsEnsemble = gfsEnsembles.get(market.city);
     if (!gfsEnsemble) continue;
 
-    // Get ECMWF ensemble if available
+    // Get ECMWF + ICON ensembles if available
     const ecmwfEnsemble = ecmwfEnsembles?.get(market.city) ?? null;
+    const iconEnsemble = iconEnsembles?.get(market.city) ?? null;
 
     // Multi-model consensus
     const consensus = calculateConsensus(
@@ -66,6 +76,7 @@ export function generateSignals(
       market.bracketType,
       market.bracketMin,
       market.bracketMax,
+      iconEnsemble,
     );
 
     if (!consensus) continue;
@@ -100,7 +111,9 @@ export function generateSignals(
       continue; // no edge
     }
 
-    if (edge < minEdge) continue;
+    // Per-tier edge threshold: LOCK needs less edge, NEAR-SAFE needs more
+    const tierMinEdge = TIER_MIN_EDGE[consensus.confidence] ?? minEdge;
+    if (edge < tierMinEdge) continue;
 
     // Size the position (apply consensus Kelly multiplier)
     const sizing = kellySize(modelProbability, effectivePrice, bankroll, config);

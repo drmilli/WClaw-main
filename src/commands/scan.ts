@@ -10,6 +10,7 @@ import { logger } from "../logger.js";
 import { loadConfig, CITIES } from "../config.js";
 import { fetchAllEnsembles } from "../weather/ensemble.js";
 import { fetchAllEcmwfEnsembles } from "../weather/ecmwf.js";
+import { fetchAllIconEnsembles } from "../weather/icon.js";
 import { fetchWeatherMarkets } from "../market/discovery.js";
 import { parseAllMarkets } from "../market/parser.js";
 import { generateSignals } from "../engine/signals.js";
@@ -26,6 +27,7 @@ async function main() {
   // 1. Fetch weather data
   const gfsEnsembles = await fetchAllEnsembles(CITIES);
   const ecmwfEnsembles = await fetchAllEcmwfEnsembles(CITIES);
+  const iconEnsembles = await fetchAllIconEnsembles(CITIES);
 
   // 2. Scan markets
   const rawMarkets = await fetchWeatherMarkets();
@@ -53,6 +55,7 @@ async function main() {
     config,
     openPositions,
     ecmwfEnsembles,
+    iconEnsembles,
   );
 
   logger.info({ signals: signals.length }, "scan: signals generated");

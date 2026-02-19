@@ -2,6 +2,7 @@ import { logger } from "./logger.js";
 import { loadConfig, CITIES } from "./config.js";
 import { fetchAllEnsembles } from "./weather/ensemble.js";
 import { fetchAllEcmwfEnsembles } from "./weather/ecmwf.js";
+import { fetchAllIconEnsembles } from "./weather/icon.js";
 import { fetchNWSForecast } from "./weather/nws.js";
 import { fetchWeatherMarkets } from "./market/discovery.js";
 import { parseAllMarkets } from "./market/parser.js";
@@ -18,6 +19,7 @@ const WEATHER_REFRESH_MS = 5 * 60 * 1000; // 5 minutes
 const MARKET_SCAN_MS = 60 * 1000; // 60 seconds
 const SETTLEMENT_CHECK_MS = 30 * 60 * 1000; // 30 minutes
 const ECMWF_REFRESH_MS = 30 * 60 * 1000; // 30 minutes (less frequent)
+const ICON_REFRESH_MS = 6 * 60 * 60 * 1000; // 6 hours (ICON updates 4x daily)
 
 async function main() {
   const config = loadConfig();
@@ -31,11 +33,13 @@ async function main() {
 
   let lastWeatherFetch = 0;
   let lastEcmwfFetch = 0;
+  let lastIconFetch = 0;
   let lastSettlementCheck = 0;
   let cycle = 0;
 
   let gfsEnsembles = new Map<string, EnsembleForecast>();
   let ecmwfEnsembles = new Map<string, EnsembleForecast>();
+  let iconEnsembles = new Map<string, EnsembleForecast>();
   let latestSignals: Signal[] = [];
 
   // Main loop
@@ -58,6 +62,13 @@ async function main() {
         lastEcmwfFetch = now;
       }
 
+      // 2b. Refresh ICON ensemble data (every 6 hours)
+      if (now - lastIconFetch >= ICON_REFRESH_MS) {
+        logger.info("Refreshing ICON ensemble forecasts...");
+        iconEnsembles = await fetchAllIconEnsembles(CITIES);
+        lastIconFetch = now;
+      }
+
       // 3. Scan markets
       const rawMarkets = await fetchWeatherMarkets();
       const parsedMarkets = parseAllMarkets(rawMarkets);
@@ -73,13 +84,14 @@ async function main() {
         logger.info({ open: openPositions.length }, "Max positions reached");
         latestSignals = [];
       } else {
-        // 5. Generate signals (pass both ensembles for consensus)
+        // 5. Generate signals (pass all 3 ensembles for consensus)
         latestSignals = generateSignals(
           parsedMarkets,
           gfsEnsembles,
           config,
           openPositions,
           ecmwfEnsembles,
+          iconEnsembles,
         );
 
         // 6. Execute signals

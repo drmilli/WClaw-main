@@ -164,18 +164,18 @@ The one-shot commands and skill package are already built. You need a VPS as the
 
 **Strategy tuning (do alongside deployment):**
 ```
-[ ] Implement dynamic edge thresholds per confidence tier in src/engine/signals.ts
+[x] Implement dynamic edge thresholds per confidence tier in src/engine/signals.ts
     - LOCK signals: 5% threshold
     - STRONG: 8%
     - SAFE: 10%
     - NEAR-SAFE: 15%
-[ ] Audit temperature rounding in src/weather/ensemble.ts:83
-    - Does Math.round() match Polymarket bracket definitions?
-[ ] Audit bracket boundary logic in src/market/parser.ts:40
-    - "Between 32-33F" → bracketMax = 34 (exclusive). Correct?
-[ ] Add ICON model as third consensus input (src/weather/icon.ts, new)
-    - Open-Meteo: models=icon_seamless
-    - Update src/engine/consensus.ts
+[x] Audit temperature rounding in src/weather/ensemble.ts:83
+    - Math.round() confirmed correct — matches Polymarket's bracket definitions
+[x] Audit bracket boundary logic in src/market/parser.ts:40
+    - "Between 32-33F" → bracketMax = 34 (exclusive). Confirmed correct.
+[x] Add ICON model as third consensus input (src/weather/icon.ts, new)
+    - Open-Meteo: models=icon_seamless, 40 members, weight 1.0
+    - Updated src/engine/consensus.ts, signals.ts, index.ts, scan.ts
 ```
 
 ---
