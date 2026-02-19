@@ -24,8 +24,6 @@ services:
     env_file:
       - .env
     command: ["bun", "run", "src/commands/web.ts"]
-    ports:
-      - "3456:3456"
     volumes:
       - weatherclaw-data:/app/data
     depends_on:
@@ -35,6 +33,24 @@ services:
       options:
         max-size: "10m"
         max-file: "3"
+
+  # Nginx — serves landing.html on port 80, proxies /dashboard + /api/ to Bun
+  nginx:
+    image: nginx:alpine
+    container_name: weatherclaw-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./landing.html:/usr/share/nginx/html/landing.html:ro
+    depends_on:
+      - weatherclaw-web
+    logging:
+      driver: json-file
+      options:
+        max-size: "5m"
+        max-file: "2"
 
 volumes:
   # Named volume so both containers share the same SQLite database
