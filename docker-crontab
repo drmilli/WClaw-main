@@ -1,0 +1,7 @@
+# WeatherClaw cron schedule
+# scan: every minute
+* * * * * cd /app && bun run src/commands/scan.ts >> /app/data/cron.log 2>&1
+# settle: every hour
+0 * * * * cd /app && bun run src/commands/settle.ts >> /app/data/cron.log 2>&1
+# status: 8 AM daily
+0 8 * * * cd /app && bun run src/commands/status.ts >> /app/data/cron.log 2>&1

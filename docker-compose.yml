@@ -1,0 +1,16 @@
+services:
+  weatherclaw:
+    build: .
+    image: weatherclaw:latest
+    container_name: weatherclaw
+    restart: unless-stopped
+    env_file:
+      - .env
+    volumes:
+      # Persist SQLite database and logs across container restarts
+      - ./data:/app/data
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
