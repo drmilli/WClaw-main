@@ -5,6 +5,49 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>WeatherClaw — Weather Prediction Market Trading Bot</title>
 <meta name="description" content="Automated Polymarket trading bot. Compares NOAA GFS and ECMWF ensemble forecast probabilities against live market prices and trades the mispricing.">
+<meta name="keywords" content="weather prediction market, polymarket trading bot, NOAA GFS, ECMWF ensemble, automated trading, prediction markets, weather alpha, polymarket bot">
+<meta name="author" content="WeatherClaw">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://weatherclaw.xyz">
+
+<!-- Favicon -->
+<link rel="icon" type="image/png" href="logo.png">
+<link rel="apple-touch-icon" href="logo.png">
+<meta name="theme-color" content="#050810">
+
+<!-- Open Graph -->
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://weatherclaw.xyz">
+<meta property="og:site_name" content="WeatherClaw">
+<meta property="og:title" content="WeatherClaw — Weather Prediction Market Trading Bot">
+<meta property="og:description" content="Automated Polymarket trading bot. Compares NOAA GFS and ECMWF ensemble forecast probabilities against live market prices and trades the mispricing.">
+<meta property="og:image" content="https://weatherclaw.xyz/logo.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="@weatherclaw">
+<meta name="twitter:creator" content="@weatherclaw">
+<meta name="twitter:title" content="WeatherClaw — Weather Prediction Market Trading Bot">
+<meta name="twitter:description" content="Automated Polymarket trading bot. Compares NOAA GFS and ECMWF ensemble forecast probabilities against live market prices and trades the mispricing.">
+<meta name="twitter:image" content="https://weatherclaw.xyz/logo.png">
+
+<!-- Structured data -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "WeatherClaw",
+  "description": "Automated weather prediction market trading bot for Polymarket. Compares NOAA GFS and ECMWF ensemble forecast probabilities against live market prices and trades the mispricing.",
+  "url": "https://weatherclaw.xyz",
+  "applicationCategory": "FinanceApplication",
+  "operatingSystem": "Any",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+  "sameAs": ["https://x.com/weatherclaw"]
+}
+</script>
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -35,14 +78,25 @@
 /* ── Reset ── */
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 html { scroll-behavior: smooth; }
+html { background: var(--bg); }
 body {
   font-family: var(--sans);
-  background: var(--bg);
+  background: transparent;
   color: var(--text);
   min-height: 100vh;
   overflow-x: hidden;
   line-height: 1.6;
 }
+
+/* ── Storm canvas background ── */
+#stormCanvas {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  z-index: 0;
+  pointer-events: none;
+}
+#page { position: relative; z-index: 1; }
 
 /* Scanline CRT overlay */
 body::after {
@@ -527,10 +581,12 @@ footer {
 </style>
 </head>
 <body>
+<canvas id="stormCanvas"></canvas>
+<div id="page">
 
 <!-- ═══ NAVIGATION ═══ -->
 <nav>
-  <a href="#" class="nav-logo">&#9889; WeatherClaw</a>
+  <a href="#" class="nav-logo"><img src="logo.png" alt="WeatherClaw" style="height:40px;width:auto;"> WeatherClaw</a>
   <ul class="nav-links">
     <li><a href="#features">Features</a></li>
     <li><a href="#how">How It Works</a></li>
@@ -539,7 +595,8 @@ footer {
   </ul>
   <div class="nav-right">
     <a href="#" class="btn btn-ghost">GitHub</a>
-    <a href="http://localhost:3456" target="_blank" class="btn btn-primary">Dashboard &#8594;</a>
+    <a href="https://x.com/weatherclaw/" target="_blank" rel="noopener" class="btn btn-ghost" style="font-size:0.85rem;padding:8px 14px;" title="Follow on X">&#120143;</a>
+    <a href="/dashboard" target="_blank" class="btn btn-primary">Dashboard &#8594;</a>
   </div>
 </nav>
 
@@ -892,7 +949,7 @@ footer {
 
 <!-- ═══ FOOTER ═══ -->
 <footer>
-  <a href="#" class="footer-logo">&#9889; WeatherClaw</a>
+  <a href="#" class="footer-logo"><img src="logo.png" alt="WeatherClaw" style="height:42px;width:auto;vertical-align:middle;margin-right:6px;"> WeatherClaw</a>
   <ul class="footer-links">
     <li><a href="#features">Features</a></li>
     <li><a href="#how">How It Works</a></li>
@@ -978,6 +1035,166 @@ function tick() {
 }
 
 setTimeout(tick, 700);
+
+// ── Storm: dark clouds + rain + lightning ──
+(function () {
+  var cv  = document.getElementById('stormCanvas');
+  var ctx = cv.getContext('2d');
+  var W = 0, H = 0;
+  function rsz() { W = cv.width = window.innerWidth; H = cv.height = window.innerHeight; }
+  rsz(); window.addEventListener('resize', rsz);
+
+  // Cloud definitions — each is a cluster of overlapping dark puffs
+  var CLOUDS = [
+    { x: 0.00, vx: 0.000055, cy: 0.07,
+      puffs: [{rx:-0.20,ry:0.04},{rx:-0.10,ry:-0.01},{rx:0,ry:0},{rx:0.11,ry:-0.03},{rx:0.22,ry:0.03},{rx:0.32,ry:0.05}] },
+    { x: 0.40, vx: 0.000038, cy: 0.04,
+      puffs: [{rx:-0.14,ry:0.03},{rx:-0.04,ry:-0.01},{rx:0.07,ry:0},{rx:0.18,ry:-0.02},{rx:0.28,ry:0.04}] },
+    { x: 0.68, vx: 0.000070, cy: 0.09,
+      puffs: [{rx:-0.16,ry:0.05},{rx:-0.06,ry:0},{rx:0.05,ry:-0.03},{rx:0.15,ry:0.02},{rx:0.26,ry:0.05}] },
+    { x: -0.30, vx: 0.000042, cy: 0.03,
+      puffs: [{rx:0,ry:0},{rx:0.10,ry:-0.02},{rx:0.21,ry:0.03},{rx:0.30,ry:0.05}] },
+  ];
+
+  // Rain drops
+  var DROPS = [];
+  for (var i = 0; i < 240; i++) {
+    DROPS.push({
+      x:   Math.random(),
+      y:   Math.random(),
+      vy:  0.0032 + Math.random() * 0.0055,
+      len: 9 + Math.random() * 20,
+      op:  0.05 + Math.random() * 0.26,
+    });
+  }
+
+  // Lightning state
+  var boltPts  = null;
+  var boltAge  = 0;
+  var BOLT_DUR = 700; // ms total bolt visible
+  var nextBolt = 3500 + Math.random() * 5000;
+
+  function makeBolt(sx, sy) {
+    var pts = [{ x: sx, y: sy }], x = sx, y = sy;
+    while (y < H * 0.82) {
+      x += (Math.random() - 0.5) * 60;
+      y += 20 + Math.random() * 36;
+      pts.push({ x: x, y: y });
+      // Random branch
+      if (Math.random() < 0.35 && y < H * 0.6) {
+        var bx = x, by = y;
+        for (var b = 0; b < 3 + Math.random() * 3; b++) {
+          bx += (Math.random() - 0.3) * 45;
+          by += 18 + Math.random() * 25;
+          pts.push({ x: bx, y: by });
+        }
+        pts.push({ x: x, y: y }); // return to trunk
+      }
+    }
+    return pts;
+  }
+
+  function drawCloud(c) {
+    var bx = c.x * W, by = c.cy * H;
+    c.puffs.forEach(function (p) {
+      var px = bx + p.rx * W;
+      var py = by + p.ry * H;
+      var pr = 0.115 * Math.min(W, H);
+      var g  = ctx.createRadialGradient(px, py, pr * 0.05, px, py, pr);
+      g.addColorStop(0,    'rgba(14,20,36,0.96)');
+      g.addColorStop(0.45, 'rgba(10,15,28,0.78)');
+      g.addColorStop(0.80, 'rgba(6,9,18,0.35)');
+      g.addColorStop(1,    'rgba(5,8,16,0)');
+      ctx.beginPath();
+      ctx.arc(px, py, pr, 0, Math.PI * 2);
+      ctx.fillStyle = g;
+      ctx.fill();
+    });
+  }
+
+  function drawBolt(pts, alpha) {
+    if (!pts || pts.length < 2) return;
+    ctx.save();
+    ctx.lineJoin = 'round'; ctx.lineCap = 'round';
+    // outer glow
+    ctx.shadowColor = 'rgba(160,210,255,0.9)'; ctx.shadowBlur = 18;
+    ctx.beginPath(); ctx.moveTo(pts[0].x, pts[0].y);
+    pts.forEach(function (p) { ctx.lineTo(p.x, p.y); });
+    ctx.strokeStyle = 'rgba(190,225,255,' + (alpha * 0.55) + ')';
+    ctx.lineWidth = 8; ctx.stroke();
+    // bright core
+    ctx.shadowBlur = 6;
+    ctx.beginPath(); ctx.moveTo(pts[0].x, pts[0].y);
+    pts.forEach(function (p) { ctx.lineTo(p.x, p.y); });
+    ctx.strokeStyle = 'rgba(248,253,255,' + alpha + ')';
+    ctx.lineWidth = 1.8; ctx.stroke();
+    ctx.restore();
+  }
+
+  var last = 0;
+  function frame(ts) {
+    var dt = Math.min(ts - last, 50); last = ts;
+    ctx.clearRect(0, 0, W, H);
+
+    // Compute current bolt flash alpha (flickers then fades)
+    var flashAlpha = 0;
+    if (boltPts) {
+      boltAge += dt;
+      var t = boltAge / BOLT_DUR;
+      // Flicker envelope: fast sine decay
+      var flicker = Math.abs(Math.sin(t * 18)) * (1 - t);
+      flashAlpha  = Math.pow(1 - t, 2) * 0.55 + flicker * 0.45;
+      if (boltAge >= BOLT_DUR) { boltPts = null; boltAge = 0; flashAlpha = 0; }
+    }
+
+    // Screen flash
+    if (flashAlpha > 0) {
+      ctx.fillStyle = 'rgba(190,220,255,' + (flashAlpha * 0.16) + ')';
+      ctx.fillRect(0, 0, W, H);
+    }
+
+    // Draw clouds
+    CLOUDS.forEach(function (c) {
+      c.x += c.vx;
+      if (c.x > 1.55) c.x = -0.55;
+      drawCloud(c);
+    });
+
+    // Draw rain
+    ctx.save(); ctx.lineWidth = 0.75;
+    DROPS.forEach(function (d) {
+      d.y += d.vy; d.x -= d.vy * 0.20;
+      if (d.y > 1.05) { d.y = -0.03; d.x = Math.random(); }
+      if (d.x < 0)    { d.x = 1.0; }
+      var op = d.op * (flashAlpha > 0.35 ? 1.9 : 1);
+      ctx.beginPath();
+      ctx.moveTo(d.x * W, d.y * H);
+      ctx.lineTo(d.x * W - d.len * 0.20, d.y * H + d.len);
+      ctx.strokeStyle = 'rgba(148,195,255,' + Math.min(op, 1) + ')';
+      ctx.stroke();
+    });
+    ctx.restore();
+
+    // Lightning countdown
+    nextBolt -= dt;
+    if (nextBolt <= 0 && !boltPts) {
+      var c = CLOUDS[Math.floor(Math.random() * CLOUDS.length)];
+      var sx = (c.x + 0.06 + Math.random() * 0.18) * W;
+      var sy = (c.cy + 0.06) * H;
+      boltPts  = makeBolt(sx, sy);
+      boltAge  = 0;
+      nextBolt = 6000 + Math.random() * 9000;
+    }
+
+    // Draw bolt
+    if (boltPts && flashAlpha > 0) drawBolt(boltPts, flashAlpha);
+
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+}());
+
 </script>
+</div><!-- /#page -->
 </body>
 </html>
