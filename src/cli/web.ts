@@ -281,7 +281,8 @@ const HTML = `<!DOCTYPE html>
 
   <header>
     <div class="logo">
-      &#9889; WeatherClaw
+      <img src="/logo.png" alt="WeatherClaw" style="height:36px;width:auto;display:block;">
+      WeatherClaw
       <span class="logo-sub">Weather Prediction Market Bot &mdash; Polymarket</span>
     </div>
     <div class="header-right">
