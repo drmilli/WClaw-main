@@ -1058,13 +1058,13 @@ setTimeout(tick, 700);
 
   // Rain drops
   var DROPS = [];
-  for (var i = 0; i < 240; i++) {
+  for (var i = 0; i < 350; i++) {
     DROPS.push({
       x:   Math.random(),
       y:   Math.random(),
-      vy:  0.0032 + Math.random() * 0.0055,
-      len: 9 + Math.random() * 20,
-      op:  0.05 + Math.random() * 0.26,
+      vy:  0.0038 + Math.random() * 0.006,
+      len: 18 + Math.random() * 32,
+      op:  0.25 + Math.random() * 0.50,
     });
   }
 
@@ -1161,17 +1161,22 @@ setTimeout(tick, 700);
     });
 
     // Draw rain
-    ctx.save(); ctx.lineWidth = 0.75;
+    ctx.save();
     DROPS.forEach(function (d) {
       d.y += d.vy; d.x -= d.vy * 0.20;
       if (d.y > 1.05) { d.y = -0.03; d.x = Math.random(); }
       if (d.x < 0)    { d.x = 1.0; }
-      var op = d.op * (flashAlpha > 0.35 ? 1.9 : 1);
-      ctx.beginPath();
-      ctx.moveTo(d.x * W, d.y * H);
-      ctx.lineTo(d.x * W - d.len * 0.20, d.y * H + d.len);
-      ctx.strokeStyle = 'rgba(148,195,255,' + Math.min(op, 1) + ')';
-      ctx.stroke();
+      var op = Math.min(d.op * (flashAlpha > 0.35 ? 2.2 : 1), 1);
+      var x0 = d.x * W, y0 = d.y * H;
+      var x1 = x0 - d.len * 0.22, y1 = y0 + d.len;
+      // Glow outer stroke
+      ctx.lineWidth = 1.8;
+      ctx.strokeStyle = 'rgba(160,210,255,' + (op * 0.45) + ')';
+      ctx.beginPath(); ctx.moveTo(x0, y0); ctx.lineTo(x1, y1); ctx.stroke();
+      // Bright core
+      ctx.lineWidth = 1.0;
+      ctx.strokeStyle = 'rgba(220,240,255,' + op + ')';
+      ctx.beginPath(); ctx.moveTo(x0, y0); ctx.lineTo(x1, y1); ctx.stroke();
     });
     ctx.restore();
 
