@@ -19,7 +19,8 @@
       "WebFetch(domain:vibeclaw.dev)",
       "Bash(bun add:*)",
       "Bash(bun run settle:*)",
-      "Bash(bun run src/engine/backtest.ts:*)"
+      "Bash(bun run src/engine/backtest.ts:*)",
+      "Bash(git push:*)"
     ]
   }
 }
