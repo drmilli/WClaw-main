@@ -134,6 +134,7 @@ export interface AppConfig {
   minEdgePct: number;
   kellyFraction: number;
   maxOpenPositions: number;
+  circuitBreakerOverride: boolean;
   polygonPrivateKey?: string;
   polymarketApiKey?: string;
   polymarketApiSecret?: string;

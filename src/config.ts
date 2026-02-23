@@ -8,6 +8,7 @@ export function loadConfig(): AppConfig {
     minEdgePct: Number(process.env["MIN_EDGE_PCT"] ?? "8"),
     kellyFraction: Number(process.env["KELLY_FRACTION"] ?? "0.25"),
     maxOpenPositions: Number(process.env["MAX_OPEN_POSITIONS"] ?? "10"),
+    circuitBreakerOverride: process.env["CIRCUIT_BREAKER_OVERRIDE"] === "true",
     polygonPrivateKey: process.env["POLYGON_PRIVATE_KEY"],
     polymarketApiKey: process.env["POLYMARKET_API_KEY"],
     polymarketApiSecret: process.env["POLYMARKET_API_SECRET"],

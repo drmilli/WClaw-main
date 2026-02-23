@@ -39,8 +39,12 @@ async function main() {
   const risk = checkRiskLimits(config, openPositions);
 
   if (risk.circuitBroken) {
-    logger.warn("scan: circuit breaker active — no trades");
-    process.exit(0);
+    if (config.circuitBreakerOverride) {
+      logger.warn("scan: circuit breaker overridden by CIRCUIT_BREAKER_OVERRIDE=true");
+    } else {
+      logger.warn("scan: circuit breaker active — no trades (set CIRCUIT_BREAKER_OVERRIDE=true to override)");
+      process.exit(0);
+    }
   }
 
   if (openPositions.length >= config.maxOpenPositions) {
