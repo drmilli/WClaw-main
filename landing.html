@@ -96,7 +96,19 @@ body {
   z-index: 0;
   pointer-events: none;
 }
-#page { position: relative; z-index: 1; }
+/* Day mode: full-screen overlay between canvas (z:0) and page content (z:2) */
+#dayOverlay {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  z-index: 1;
+  background: rgba(5, 10, 22, 0.50);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+body.day-mode #dayOverlay { opacity: 1; }
+#page { position: relative; z-index: 2; }
 
 /* Scanline CRT overlay */
 body::after {
@@ -578,10 +590,12 @@ footer {
   .stat-block:nth-child(3) { border-right: none; }
   .stat-block:last-child { border-bottom: none; border-right: none; }
 }
+
 </style>
 </head>
 <body>
 <canvas id="stormCanvas"></canvas>
+<div id="dayOverlay"></div>
 <div id="page">
 
 <!-- ═══ NAVIGATION ═══ -->
@@ -596,6 +610,7 @@ footer {
   <div class="nav-right">
     <a href="#" class="btn btn-ghost">GitHub</a>
     <a href="https://x.com/weatherclaw/" target="_blank" rel="noopener" class="btn btn-ghost" style="font-size:0.85rem;padding:8px 14px;" title="Follow on X">&#120143;</a>
+    <button id="moodToggle" onclick="toggleStormMood()" class="btn btn-ghost" style="padding:8px 14px;font-size:1rem;cursor:pointer;line-height:1;" title="Switch to sunny day">&#9728;</button>
     <a href="/dashboard" target="_blank" class="btn btn-primary">Dashboard &#8594;</a>
   </div>
 </nav>
@@ -1036,7 +1051,7 @@ function tick() {
 
 setTimeout(tick, 700);
 
-// ── Storm: dark clouds + rain + lightning ──
+// ── Storm canvas: night storm (default) ↔ sunny day (toggle) ──
 (function () {
   var cv  = document.getElementById('stormCanvas');
   var ctx = cv.getContext('2d');
@@ -1044,7 +1059,19 @@ setTimeout(tick, 700);
   function rsz() { W = cv.width = window.innerWidth; H = cv.height = window.innerHeight; }
   rsz(); window.addEventListener('resize', rsz);
 
-  // Cloud definitions — each is a cluster of overlapping dark puffs
+  var NIGHT = true; // night storm is default
+
+  window.toggleStormMood = function () {
+    NIGHT = !NIGHT;
+    document.body.classList.toggle('day-mode', !NIGHT);
+    var btn = document.getElementById('moodToggle');
+    if (btn) {
+      btn.innerHTML = NIGHT ? '&#9728;' : '&#9928;'; // ☀ when night, ⛈ when day
+      btn.title     = NIGHT ? 'Switch to sunny day' : 'Switch to night storm';
+    }
+  };
+
+  // Shared cloud positions (used by both modes)
   var CLOUDS = [
     { x: 0.00, vx: 0.000055, cy: 0.07,
       puffs: [{rx:-0.20,ry:0.04},{rx:-0.10,ry:-0.01},{rx:0,ry:0},{rx:0.11,ry:-0.03},{rx:0.22,ry:0.03},{rx:0.32,ry:0.05}] },
@@ -1056,7 +1083,7 @@ setTimeout(tick, 700);
       puffs: [{rx:0,ry:0},{rx:0.10,ry:-0.02},{rx:0.21,ry:0.03},{rx:0.30,ry:0.05}] },
   ];
 
-  // Rain drops
+  // Rain drops (night mode)
   var DROPS = [];
   for (var i = 0; i < 350; i++) {
     DROPS.push({
@@ -1064,14 +1091,12 @@ setTimeout(tick, 700);
       y:   Math.random(),
       vy:  0.0038 + Math.random() * 0.006,
       len: 18 + Math.random() * 32,
-      op:  0.25 + Math.random() * 0.50,
+      op:  0.175 + Math.random() * 0.35,
     });
   }
 
-  // Lightning state
-  var boltPts  = null;
-  var boltAge  = 0;
-  var BOLT_DUR = 700; // ms total bolt visible
+  // Lightning (night mode)
+  var boltPts = null, boltAge = 0, BOLT_DUR = 700;
   var nextBolt = 3500 + Math.random() * 5000;
 
   function makeBolt(sx, sy) {
@@ -1080,7 +1105,6 @@ setTimeout(tick, 700);
       x += (Math.random() - 0.5) * 60;
       y += 20 + Math.random() * 36;
       pts.push({ x: x, y: y });
-      // Random branch
       if (Math.random() < 0.35 && y < H * 0.6) {
         var bx = x, by = y;
         for (var b = 0; b < 3 + Math.random() * 3; b++) {
@@ -1088,27 +1112,25 @@ setTimeout(tick, 700);
           by += 18 + Math.random() * 25;
           pts.push({ x: bx, y: by });
         }
-        pts.push({ x: x, y: y }); // return to trunk
+        pts.push({ x: x, y: y });
       }
     }
     return pts;
   }
 
-  function drawCloud(c) {
+  // ── Night: dark storm clouds ──
+  function drawNightCloud(c) {
     var bx = c.x * W, by = c.cy * H;
     c.puffs.forEach(function (p) {
-      var px = bx + p.rx * W;
-      var py = by + p.ry * H;
+      var px = bx + p.rx * W, py = by + p.ry * H;
       var pr = 0.115 * Math.min(W, H);
-      var g  = ctx.createRadialGradient(px, py, pr * 0.05, px, py, pr);
+      var g = ctx.createRadialGradient(px, py, pr * 0.05, px, py, pr);
       g.addColorStop(0,    'rgba(14,20,36,0.96)');
       g.addColorStop(0.45, 'rgba(10,15,28,0.78)');
       g.addColorStop(0.80, 'rgba(6,9,18,0.35)');
       g.addColorStop(1,    'rgba(5,8,16,0)');
-      ctx.beginPath();
-      ctx.arc(px, py, pr, 0, Math.PI * 2);
-      ctx.fillStyle = g;
-      ctx.fill();
+      ctx.beginPath(); ctx.arc(px, py, pr, 0, Math.PI * 2);
+      ctx.fillStyle = g; ctx.fill();
     });
   }
 
@@ -1116,13 +1138,11 @@ setTimeout(tick, 700);
     if (!pts || pts.length < 2) return;
     ctx.save();
     ctx.lineJoin = 'round'; ctx.lineCap = 'round';
-    // outer glow
     ctx.shadowColor = 'rgba(160,210,255,0.9)'; ctx.shadowBlur = 18;
     ctx.beginPath(); ctx.moveTo(pts[0].x, pts[0].y);
     pts.forEach(function (p) { ctx.lineTo(p.x, p.y); });
     ctx.strokeStyle = 'rgba(190,225,255,' + (alpha * 0.55) + ')';
     ctx.lineWidth = 8; ctx.stroke();
-    // bright core
     ctx.shadowBlur = 6;
     ctx.beginPath(); ctx.moveTo(pts[0].x, pts[0].y);
     pts.forEach(function (p) { ctx.lineTo(p.x, p.y); });
@@ -1131,68 +1151,102 @@ setTimeout(tick, 700);
     ctx.restore();
   }
 
+  // ── Day: bright sky, fluffy white clouds, sun ──
+  function drawDayCloud(c) {
+    var bx = c.x * W, by = c.cy * H;
+    c.puffs.forEach(function (p) {
+      var px = bx + p.rx * W, py = by + p.ry * H;
+      var pr = 0.115 * Math.min(W, H);
+      var g = ctx.createRadialGradient(px, py, pr * 0.05, px, py, pr);
+      g.addColorStop(0,    'rgba(255,255,255,0.97)');
+      g.addColorStop(0.40, 'rgba(228,242,255,0.82)');
+      g.addColorStop(0.75, 'rgba(195,222,245,0.36)');
+      g.addColorStop(1,    'rgba(170,210,238,0)');
+      ctx.beginPath(); ctx.arc(px, py, pr, 0, Math.PI * 2);
+      ctx.fillStyle = g; ctx.fill();
+    });
+  }
+
+  function drawSun() {
+    var sx = W * 0.82, sy = H * 0.11;
+    // Wide corona
+    var gc = ctx.createRadialGradient(sx, sy, 28, sx, sy, 230);
+    gc.addColorStop(0,   'rgba(255,245,120,0.32)');
+    gc.addColorStop(0.4, 'rgba(255,215,55,0.13)');
+    gc.addColorStop(1,   'rgba(255,185,20,0)');
+    ctx.beginPath(); ctx.arc(sx, sy, 230, 0, Math.PI * 2);
+    ctx.fillStyle = gc; ctx.fill();
+    // Disk
+    var gd = ctx.createRadialGradient(sx - 12, sy - 12, 0, sx, sy, 52);
+    gd.addColorStop(0,   'rgba(255,255,220,1)');
+    gd.addColorStop(0.5, 'rgba(255,232,80,0.95)');
+    gd.addColorStop(1,   'rgba(255,195,28,0.78)');
+    ctx.beginPath(); ctx.arc(sx, sy, 52, 0, Math.PI * 2);
+    ctx.fillStyle = gd; ctx.fill();
+  }
+
   var last = 0;
   function frame(ts) {
     var dt = Math.min(ts - last, 50); last = ts;
     ctx.clearRect(0, 0, W, H);
 
-    // Compute current bolt flash alpha (flickers then fades)
-    var flashAlpha = 0;
-    if (boltPts) {
-      boltAge += dt;
-      var t = boltAge / BOLT_DUR;
-      // Flicker envelope: fast sine decay
-      var flicker = Math.abs(Math.sin(t * 18)) * (1 - t);
-      flashAlpha  = Math.pow(1 - t, 2) * 0.55 + flicker * 0.45;
-      if (boltAge >= BOLT_DUR) { boltPts = null; boltAge = 0; flashAlpha = 0; }
+    if (NIGHT) {
+      // ── Night storm ──
+      var flashAlpha = 0;
+      if (boltPts) {
+        boltAge += dt;
+        var t = boltAge / BOLT_DUR;
+        var flicker = Math.abs(Math.sin(t * 18)) * (1 - t);
+        flashAlpha = Math.pow(1 - t, 2) * 0.55 + flicker * 0.45;
+        if (boltAge >= BOLT_DUR) { boltPts = null; boltAge = 0; flashAlpha = 0; }
+      }
+      if (flashAlpha > 0) {
+        ctx.fillStyle = 'rgba(190,220,255,' + (flashAlpha * 0.16) + ')';
+        ctx.fillRect(0, 0, W, H);
+      }
+      CLOUDS.forEach(function (c) {
+        c.x += c.vx; if (c.x > 1.55) c.x = -0.55;
+        drawNightCloud(c);
+      });
+      ctx.save();
+      DROPS.forEach(function (d) {
+        d.y += d.vy; d.x -= d.vy * 0.20;
+        if (d.y > 1.05) { d.y = -0.03; d.x = Math.random(); }
+        if (d.x < 0)    { d.x = 1.0; }
+        var op = Math.min(d.op * (flashAlpha > 0.35 ? 2.0 : 1), 1);
+        var x0 = d.x * W, y0 = d.y * H;
+        var x1 = x0 - d.len * 0.22, y1 = y0 + d.len;
+        ctx.lineWidth = 1.8;
+        ctx.strokeStyle = 'rgba(160,210,255,' + (op * 0.40) + ')';
+        ctx.beginPath(); ctx.moveTo(x0, y0); ctx.lineTo(x1, y1); ctx.stroke();
+        ctx.lineWidth = 1.0;
+        ctx.strokeStyle = 'rgba(220,240,255,' + op + ')';
+        ctx.beginPath(); ctx.moveTo(x0, y0); ctx.lineTo(x1, y1); ctx.stroke();
+      });
+      ctx.restore();
+      nextBolt -= dt;
+      if (nextBolt <= 0 && !boltPts) {
+        var cl = CLOUDS[Math.floor(Math.random() * CLOUDS.length)];
+        var lsx = (cl.x + 0.06 + Math.random() * 0.18) * W;
+        var lsy = (cl.cy + 0.06) * H;
+        boltPts = makeBolt(lsx, lsy); boltAge = 0;
+        nextBolt = 6000 + Math.random() * 9000;
+      }
+      if (boltPts && flashAlpha > 0) drawBolt(boltPts, flashAlpha);
+
+    } else {
+      // ── Sunny day ──
+      var sg = ctx.createLinearGradient(0, 0, 0, H);
+      sg.addColorStop(0,   '#1282c2');
+      sg.addColorStop(0.5, '#3db5e8');
+      sg.addColorStop(1,   '#96d8f5');
+      ctx.fillStyle = sg; ctx.fillRect(0, 0, W, H);
+      drawSun();
+      CLOUDS.forEach(function (c) {
+        c.x += c.vx * 1.8; if (c.x > 1.55) c.x = -0.55;
+        drawDayCloud(c);
+      });
     }
-
-    // Screen flash
-    if (flashAlpha > 0) {
-      ctx.fillStyle = 'rgba(190,220,255,' + (flashAlpha * 0.16) + ')';
-      ctx.fillRect(0, 0, W, H);
-    }
-
-    // Draw clouds
-    CLOUDS.forEach(function (c) {
-      c.x += c.vx;
-      if (c.x > 1.55) c.x = -0.55;
-      drawCloud(c);
-    });
-
-    // Draw rain
-    ctx.save();
-    DROPS.forEach(function (d) {
-      d.y += d.vy; d.x -= d.vy * 0.20;
-      if (d.y > 1.05) { d.y = -0.03; d.x = Math.random(); }
-      if (d.x < 0)    { d.x = 1.0; }
-      var op = Math.min(d.op * (flashAlpha > 0.35 ? 2.2 : 1), 1);
-      var x0 = d.x * W, y0 = d.y * H;
-      var x1 = x0 - d.len * 0.22, y1 = y0 + d.len;
-      // Glow outer stroke
-      ctx.lineWidth = 1.8;
-      ctx.strokeStyle = 'rgba(160,210,255,' + (op * 0.45) + ')';
-      ctx.beginPath(); ctx.moveTo(x0, y0); ctx.lineTo(x1, y1); ctx.stroke();
-      // Bright core
-      ctx.lineWidth = 1.0;
-      ctx.strokeStyle = 'rgba(220,240,255,' + op + ')';
-      ctx.beginPath(); ctx.moveTo(x0, y0); ctx.lineTo(x1, y1); ctx.stroke();
-    });
-    ctx.restore();
-
-    // Lightning countdown
-    nextBolt -= dt;
-    if (nextBolt <= 0 && !boltPts) {
-      var c = CLOUDS[Math.floor(Math.random() * CLOUDS.length)];
-      var sx = (c.x + 0.06 + Math.random() * 0.18) * W;
-      var sy = (c.cy + 0.06) * H;
-      boltPts  = makeBolt(sx, sy);
-      boltAge  = 0;
-      nextBolt = 6000 + Math.random() * 9000;
-    }
-
-    // Draw bolt
-    if (boltPts && flashAlpha > 0) drawBolt(boltPts, flashAlpha);
 
     requestAnimationFrame(frame);
   }
