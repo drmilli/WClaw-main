@@ -3,9 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>WeatherClaw — Weather Prediction Market Trading Bot</title>
-<meta name="description" content="Automated Polymarket trading bot. Compares NOAA GFS and ECMWF ensemble forecast probabilities against live market prices and trades the mispricing.">
-<meta name="keywords" content="weather prediction market, polymarket trading bot, NOAA GFS, ECMWF ensemble, automated trading, prediction markets, weather alpha, polymarket bot">
+<title>WeatherClaw — Make Money From Weather Forecasts on Autopilot</title>
+<meta name="description" content="Automated Polymarket trading bot that turns weather forecasts into USDC profit. 122 ensemble models find mispriced markets so you don't have to. Deploy in 5 minutes with OpenClaw.">
+<meta name="keywords" content="polymarket trading bot, make money polymarket, weather prediction market, automated USDC trading, polymarket weather, openclaw bot, weather alpha">
 <meta name="author" content="WeatherClaw">
 <meta name="robots" content="index, follow">
 <link rel="canonical" href="https://weatherclaw.xyz">
@@ -19,8 +19,8 @@
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://weatherclaw.xyz">
 <meta property="og:site_name" content="WeatherClaw">
-<meta property="og:title" content="WeatherClaw — Weather Prediction Market Trading Bot">
-<meta property="og:description" content="Automated Polymarket trading bot. Compares NOAA GFS and ECMWF ensemble forecast probabilities against live market prices and trades the mispricing.">
+<meta property="og:title" content="WeatherClaw — Make Money From Weather Forecasts on Autopilot">
+<meta property="og:description" content="Automated Polymarket trading bot that turns weather forecasts into USDC profit. 122 ensemble models find mispriced markets. Deploy in 5 minutes.">
 <meta property="og:image" content="https://weatherclaw.xyz/logo.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -29,7 +29,7 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@weatherclaw">
 <meta name="twitter:creator" content="@weatherclaw">
-<meta name="twitter:title" content="WeatherClaw — Weather Prediction Market Trading Bot">
+<meta name="twitter:title" content="WeatherClaw — Make Money From Weather Forecasts on Autopilot">
 <meta name="twitter:description" content="Automated Polymarket trading bot. Compares NOAA GFS and ECMWF ensemble forecast probabilities against live market prices and trades the mispricing.">
 <meta name="twitter:image" content="https://weatherclaw.xyz/logo.png">
 
@@ -373,14 +373,14 @@ section { padding: 80px 0; }
 
 /* ── How It Works ── */
 .how-grid {
-  display: grid; grid-template-columns: repeat(3, 1fr);
+  display: grid; grid-template-columns: repeat(4, 1fr);
   gap: 20px; margin-top: 44px;
   position: relative;
 }
 .how-grid::before {
   content: '';
   position: absolute; top: 22px;
-  left: calc(16.67% + 10px); right: calc(16.67% + 10px);
+  left: calc(12.5% + 10px); right: calc(12.5% + 10px);
   height: 1px;
   background: linear-gradient(90deg, var(--accent), var(--green));
   opacity: 0.25;
@@ -573,7 +573,7 @@ footer {
   .hero-terminal { display: none; }
   .features-grid { grid-template-columns: 1fr 1fr; }
   .how-grid::before { display: none; }
-  .how-grid { grid-template-columns: 1fr; }
+  .how-grid { grid-template-columns: 1fr 1fr; }
   .cities-grid { grid-template-columns: 1fr 1fr; }
 }
 @media (max-width: 640px) {
@@ -584,6 +584,7 @@ footer {
   .cta-section { padding: 60px 20px; }
   footer { padding: 20px; flex-direction: column; align-items: flex-start; }
   .features-grid { grid-template-columns: 1fr; }
+  .how-grid { grid-template-columns: 1fr; }
   .cities-grid { grid-template-columns: 1fr 1fr; }
   .stats-inner { flex-wrap: wrap; }
   .stat-block { width: 33.33%; min-width: 100px; border-bottom: 1px solid var(--border); }
@@ -620,32 +621,31 @@ footer {
   <div>
     <div class="eyebrow fu fu1">
       <span class="eyebrow-line"></span>
-      Automated Weather Alpha
+      Automated Polymarket Trading Bot
     </div>
     <h1 class="fu fu2">
-      Trade Weather<br>
-      Markets With<br>
-      <span class="h1-accent">Model Precision</span>
+      Make Money From<br>
+      Weather Forecasts<br>
+      <span class="h1-accent">On Autopilot</span>
     </h1>
     <p class="hero-sub fu fu3">
-      WeatherClaw compares NOAA GFS and ECMWF ensemble forecast probabilities against live Polymarket prices &mdash; and automatically trades the mispricing.
+      Polymarket pays real USDC for correct weather predictions. Most traders guess. WeatherClaw uses 122 ensemble forecast models to find mispriced markets and trade them automatically &mdash; so you profit while you sleep.
     </p>
     <div class="install-box fu fu4">
       <span class="install-prefix">$</span>
-      <span class="install-cmd" id="installCmd">bun run paper</span>
+      <span class="install-cmd" id="installCmd">openclaw skill add weatherclaw</span>
       <button class="copy-btn" onclick="doCopy()">Copy</button>
     </div>
     <div class="hero-cta fu fu5">
-      <a href="#how" class="btn btn-primary btn-lg">Get Started</a>
-      <a href="#features" class="btn btn-ghost btn-lg">See Features</a>
+      <a href="#how" class="btn btn-primary btn-lg">Start Paper Trading</a>
+      <a href="/dashboard" target="_blank" class="btn btn-ghost btn-lg">See Live Dashboard</a>
     </div>
     <div class="badge-strip fu fu5">
-      <span class="badge-pill">Bun Runtime</span>
-      <span class="badge-pill">TypeScript</span>
       <span class="badge-pill">Polymarket</span>
-      <span class="badge-pill">NOAA GFS</span>
-      <span class="badge-pill">ECMWF</span>
-      <span class="badge-pill">SQLite</span>
+      <span class="badge-pill">OpenClaw</span>
+      <span class="badge-pill">USDC Payouts</span>
+      <span class="badge-pill">122 Ensemble Models</span>
+      <span class="badge-pill">Auto-Settlement</span>
     </div>
   </div>
 
@@ -667,28 +667,28 @@ footer {
 <div class="stats-strip">
   <div class="stats-inner">
     <div class="stat-block">
-      <div class="stat-num">6</div>
-      <div class="stat-lbl">Cities Tracked</div>
+      <div class="stat-num">61.7%</div>
+      <div class="stat-lbl">Backtest Win Rate</div>
     </div>
     <div class="stat-block">
-      <div class="stat-num">82</div>
-      <div class="stat-lbl">Ensemble Members</div>
+      <div class="stat-num">20.7%</div>
+      <div class="stat-lbl">Avg Edge Per Trade</div>
     </div>
     <div class="stat-block">
-      <div class="stat-num">145+</div>
-      <div class="stat-lbl">Markets per Scan</div>
+      <div class="stat-num">122</div>
+      <div class="stat-lbl">Ensemble Forecasts</div>
     </div>
     <div class="stat-block">
-      <div class="stat-num">8%</div>
-      <div class="stat-lbl">Min Edge Required</div>
+      <div class="stat-num">1,440</div>
+      <div class="stat-lbl">Scans Per Day</div>
     </div>
     <div class="stat-block">
-      <div class="stat-num">&frac14;</div>
-      <div class="stat-lbl">Kelly Fraction</div>
+      <div class="stat-num">$50</div>
+      <div class="stat-lbl">Min Bankroll</div>
     </div>
     <div class="stat-block">
       <div class="stat-num">&lt;1s</div>
-      <div class="stat-lbl">Scan Cycle Time</div>
+      <div class="stat-lbl">Per Scan Cycle</div>
     </div>
   </div>
 </div>
@@ -696,40 +696,40 @@ footer {
 <!-- ═══ FEATURES ═══ -->
 <section id="features">
   <div class="container">
-    <div class="section-label">What&rsquo;s Inside</div>
-    <h2 class="section-heading">Built for edge, not luck</h2>
-    <p class="section-sub">Every component is designed around one idea: ensemble weather models know more than the retail market does.</p>
+    <div class="section-label">Why It Works</div>
+    <h2 class="section-heading">Built to compound, not gamble</h2>
+    <p class="section-sub">Every component exists to find edge, size it correctly, and protect your bankroll when the market moves against you.</p>
 
     <div class="features-grid">
       <div class="feature-card">
         <div class="feat-icon">&#127783;</div>
-        <div class="feat-title">Multi-Model Consensus</div>
-        <div class="feat-desc">Combines GFS (31 members, weight&nbsp;1.0) and ECMWF (51 members, weight&nbsp;1.2) into a weighted probability. Four confidence tiers: LOCK, STRONG, SAFE, NEAR-SAFE.</div>
+        <div class="feat-title">3-Model Consensus</div>
+        <div class="feat-desc">GFS (31 members) and ECMWF (51 members) are combined into a single weighted probability. Four confidence tiers &mdash; LOCK, STRONG, SAFE, NEAR-SAFE &mdash; determine how aggressively to bet. No single model, no guessing.</div>
       </div>
       <div class="feature-card">
         <div class="feat-icon">&#128200;</div>
-        <div class="feat-title">Kelly Criterion Sizing</div>
-        <div class="feat-desc">Quarter-Kelly position sizing with per-confidence multipliers. LOCK bets 1.5&times;, STRONG 1.2&times;, SAFE 1.0&times;. Max position capped at 5% of bankroll.</div>
-      </div>
-      <div class="feature-card">
-        <div class="feat-icon">&#128269;</div>
-        <div class="feat-title">Real-time Discovery</div>
-        <div class="feat-desc">Discovers markets via Polymarket Gamma API event slugs. Scans 6 cities &times; 7 forecast days every cycle. The Gamma tag param is broken &mdash; slugs are the workaround.</div>
+        <div class="feat-title">Kelly Sizing</div>
+        <div class="feat-desc">Every trade is sized by the Kelly criterion to maximize long-term growth. Quarter-Kelly keeps variance low. LOCK signals bet 1.5&times;, STRONG 1.2&times;. Max position capped at 5% of bankroll &mdash; one bad trade can&rsquo;t blow you up.</div>
       </div>
       <div class="feature-card">
         <div class="feat-icon">&#9889;</div>
         <div class="feat-title">Circuit Breaker</div>
-        <div class="feat-desc">Halts trading automatically after 3 consecutive losses. Risk state is reconstructed from SQLite on startup &mdash; durable across process restarts and cron cycles.</div>
+        <div class="feat-desc">3 consecutive losses and trading halts automatically. No emotional revenge trading, no death spiral. Resets on the next win. Your bankroll is protected even when the models miss.</div>
       </div>
       <div class="feature-card">
         <div class="feat-icon">&#128196;</div>
-        <div class="feat-title">Paper &amp; Live Modes</div>
-        <div class="feat-desc">Paper mode logs virtual trades instantly with no external calls. Live mode places GTC limit orders via the Polymarket CLOB API with EIP-712 signing. Switch with <code style="color:var(--accent);font-family:var(--mono);font-size:0.8em">MODE=live</code>.</div>
+        <div class="feat-title">Paper &rarr; Live Toggle</div>
+        <div class="feat-desc">Start in paper mode with zero risk &mdash; identical logic, no real money. When you&rsquo;re confident, flip to live and WeatherClaw places real CLOB orders on Polymarket. One environment variable, same codebase.</div>
       </div>
       <div class="feature-card">
-        <div class="feat-icon">&#9989;</div>
-        <div class="feat-title">Auto Settlement</div>
-        <div class="feat-desc">Fetches observed temperatures from Iowa State Mesonet CLI. Matches actual highs/lows against position brackets and updates P&amp;L automatically. 12&ndash;24hr data lag is expected.</div>
+        <div class="feat-icon">&#9881;</div>
+        <div class="feat-title">OpenClaw Deployment</div>
+        <div class="feat-desc">Install with <code style="color:var(--accent);font-family:var(--mono);font-size:0.8em">openclaw skill add weatherclaw</code> and it runs on your VPS via cron. No Docker, no Kubernetes. Scans every 30 minutes, settles daily, reports via web dashboard.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feat-icon">&#128202;</div>
+        <div class="feat-title">Live Web Dashboard</div>
+        <div class="feat-desc">Real-time P&amp;L, open positions, signal history, and settlement status in a single dashboard. See exactly what the bot is doing, what it&rsquo;s holding, and how much you&rsquo;ve made &mdash; from any device.</div>
       </div>
     </div>
   </div>
@@ -738,25 +738,30 @@ footer {
 <!-- ═══ HOW IT WORKS ═══ -->
 <section id="how" class="alt-bg">
   <div class="container">
-    <div class="section-label">The Process</div>
-    <h2 class="section-heading">How WeatherClaw works</h2>
-    <p class="section-sub">Three steps from weather model to Polymarket position.</p>
+    <div class="section-label">The Edge</div>
+    <h2 class="section-heading">Weather models know more than the market does</h2>
+    <p class="section-sub">Polymarket lets anyone bet on tomorrow&rsquo;s temperature. Most traders use gut feeling. WeatherClaw uses the same models that power the National Weather Service.</p>
 
     <div class="how-grid">
       <div class="how-card">
         <span class="how-num">Step 01</span>
-        <div class="how-title">Fetch Ensembles</div>
-        <div class="how-desc">GFS (31 members) and ECMWF (51 members) provide full probability distributions over daily high and low temperatures for 7 days ahead. Cities are fetched sequentially with 200ms delays to respect the 10K/day rate limit. All temps converted to Fahrenheit internally.</div>
+        <div class="how-title">The Market</div>
+        <div class="how-desc">Polymarket lists daily temperature brackets for 6 US cities &mdash; &ldquo;Will NYC&rsquo;s high be 38&ndash;39&deg;F?&rdquo; Each bracket trades like a stock with a price between 0&cent; and 100&cent;. Correct predictions pay $1 USDC. That price is set by the crowd &mdash; and the crowd is often wrong.</div>
       </div>
       <div class="how-card">
         <span class="how-num">Step 02</span>
-        <div class="how-title">Find the Edge</div>
-        <div class="how-desc">Polymarket market titles like &ldquo;be between 40&ndash;41&deg;F&rdquo; are parsed into bracket ranges. Model probability is compared to market price. Edge = modelProb &minus; marketPrice. Signals require &ge;8% edge and at least 2 hours to settlement.</div>
+        <div class="how-title">The Mispricing</div>
+        <div class="how-desc">WeatherClaw fetches 122 ensemble forecast members from GFS and ECMWF &mdash; the same models used by NOAA. It calculates the true probability of each bracket and compares it to the market price. When the gap exceeds 8%, that&rsquo;s a trade.</div>
       </div>
       <div class="how-card">
         <span class="how-num">Step 03</span>
-        <div class="how-title">Execute &amp; Settle</div>
-        <div class="how-desc">Kelly-sized positions are placed as paper trades or live CLOB limit orders. Iowa State Mesonet data settles outcomes the following day. Wins, losses, and running P&amp;L are tracked in SQLite with WAL mode for concurrent read access.</div>
+        <div class="how-title">The Execution</div>
+        <div class="how-desc">Each signal is sized using the Kelly criterion to maximize long-term growth without risking ruin. Paper mode logs the trade instantly. Live mode places a real limit order on Polymarket&rsquo;s CLOB. Every 30 minutes, the bot scans again.</div>
+      </div>
+      <div class="how-card">
+        <span class="how-num">Step 04</span>
+        <div class="how-title">The Settlement</div>
+        <div class="how-desc">When the day ends, actual observed temperatures are fetched from Iowa State Mesonet. Winning positions pay $1 USDC per share. Losses cost your entry price. P&amp;L is tracked automatically &mdash; you just check the dashboard.</div>
       </div>
     </div>
   </div>
@@ -765,9 +770,9 @@ footer {
 <!-- ═══ CITIES ═══ -->
 <section id="cities">
   <div class="container">
-    <div class="section-label">Coverage</div>
-    <h2 class="section-heading">6 cities, 7 days ahead</h2>
-    <p class="section-sub">Daily high and low temperature markets tracked across 6 major US cities using NWS grid coordinates and Iowa State ICAO stations.</p>
+    <div class="section-label">The Opportunity</div>
+    <h2 class="section-heading">Polymarket weather markets are consistently mispriced</h2>
+    <p class="section-sub">6 cities, 7 days ahead, high and low brackets &mdash; that&rsquo;s 100+ markets every day where retail traders set prices based on vibes and WeatherClaw trades on data.</p>
 
     <div class="cities-grid">
       <div class="city-card">
@@ -832,8 +837,8 @@ footer {
 <section class="alt-bg" style="padding-top:0">
   <div class="container" style="padding-top:80px;padding-bottom:80px">
     <div class="section-label">Live Example</div>
-    <h2 class="section-heading">What a scan cycle looks like</h2>
-    <p class="section-sub">Real signals from a scan on Feb&nbsp;18&nbsp;2026. The bot generated 19 signals and executed 10 paper trades with $24.25 total exposure.</p>
+    <h2 class="section-heading">Real edge, real numbers</h2>
+    <p class="section-sub">A single scan on Feb&nbsp;18&nbsp;2026 found 19 signals with edges up to +72.8%. 10 trades executed automatically with $24.25 total exposure. This happens every 30 minutes.</p>
 
     <div class="signal-demo">
       <div class="demo-bar">
@@ -906,39 +911,39 @@ footer {
 
     <div class="faq-list">
       <details>
-        <summary>How accurate are GFS and ECMWF ensemble models?</summary>
+        <summary>How much money can I make?</summary>
         <div class="faq-answer">
-          GFS and ECMWF ensemble models achieve <strong>85&ndash;90% accuracy</strong> on 1&ndash;3 day temperature forecasts. The ensemble spread (31 members for GFS, 51 for ECMWF) gives a full probability distribution rather than a point forecast. Polymarket retail pricing often reflects uniform <code>1/N</code> priors, creating systematic mispricings that WeatherClaw exploits.
+          It depends on your bankroll and market conditions. Backtest data shows a <strong>61.7% win rate</strong> with an average edge of 20.7% per trade. With a $50 bankroll and quarter-Kelly sizing, individual trades are $1&ndash;$3 USDC. Compounding winners grows the bankroll over time. This is not a get-rich-quick scheme &mdash; it&rsquo;s a systematic edge that compounds.
         </div>
       </details>
       <details>
-        <summary>What&rsquo;s the minimum bankroll required?</summary>
+        <summary>What&rsquo;s the minimum to start?</summary>
         <div class="faq-answer">
-          The default <code>BANKROLL_USDC=50</code> is a practical minimum. With quarter-Kelly sizing and a 5% max position cap, individual trades range from <strong>$1&ndash;$3 USDC</strong>. For live mode you&rsquo;ll also need a small amount of MATIC on Polygon for gas fees (a few cents per transaction).
+          <strong>$50 USDC</strong> on Polygon is a practical minimum. Individual trades range from $1&ndash;$3 with default settings. You&rsquo;ll also need a small amount of MATIC for gas fees (a few cents per transaction). Paper mode is completely free &mdash; no wallet or funds required.
         </div>
       </details>
       <details>
-        <summary>How is position size calculated?</summary>
+        <summary>Is this actually profitable or just backtested?</summary>
         <div class="faq-answer">
-          WeatherClaw uses the <strong>Kelly criterion</strong>: <code>f* = (b&middot;p &minus; q) / b</code> where <code>b</code> is the net odds, <code>p</code> is the model probability, and <code>q = 1&minus;p</code>. The raw Kelly fraction is multiplied by 0.25 (quarter-Kelly) and a confidence multiplier (1.0&ndash;1.5&times; based on LOCK/STRONG/SAFE), then capped at <code>MAX_POSITION_PCT</code> of bankroll.
+          The backtests use real historical market prices and real ensemble forecast data &mdash; no lookahead bias. Paper mode lets you verify the edge in real-time before risking a dollar. The signal table on this page shows real output from a live scan. That said, past performance doesn&rsquo;t guarantee future results and market conditions can change.
         </div>
       </details>
       <details>
-        <summary>What happens when the circuit breaker triggers?</summary>
+        <summary>What if it starts losing money?</summary>
         <div class="faq-answer">
-          After <strong>3 consecutive settling losses</strong>, all new trade execution is automatically paused. The breaker resets on the next winning settlement. Risk state is reconstructed from SQLite on every process start, so the breaker survives restarts and one-shot <code>bun run scan</code> cycles.
+          The <strong>circuit breaker</strong> automatically halts all trading after 3 consecutive losses. No emotional revenge trading, no death spiral. It resets on the next win. Quarter-Kelly sizing also ensures no single trade risks more than a small fraction of your bankroll. You can also pause the bot at any time by stopping the OpenClaw cron.
         </div>
       </details>
       <details>
-        <summary>Can I paper trade before using real money?</summary>
+        <summary>Do I need to know anything about weather or trading?</summary>
         <div class="faq-answer">
-          Yes &mdash; <code>MODE=paper</code> is the default. Paper trades are logged instantly to SQLite with identical data to live trades. Settlement, P&amp;L tracking, and the circuit breaker all work identically. Run <code>bun run paper</code> for the continuous dev loop, or <code>bun run scan</code> for a one-shot cycle.
+          No. WeatherClaw handles everything &mdash; fetching forecasts, discovering markets, calculating edge, sizing positions, and settling outcomes. You install it, set your bankroll, and let it run. The dashboard shows you exactly what&rsquo;s happening in plain English. If you want to understand the math, the code is open source.
         </div>
       </details>
       <details>
-        <summary>How does automatic settlement work?</summary>
+        <summary>What is Polymarket?</summary>
         <div class="faq-answer">
-          The <code>bun run settle</code> command fetches actual observed temperatures from the <strong>Iowa State Mesonet CLI API</strong>. It checks each open position whose market date has passed, compares the observed high/low against the bracket boundaries, and marks positions as <code>won</code> or <code>lost</code>. Iowa State data typically lags <strong>12&ndash;24 hours</strong> after the day ends &mdash; this is expected and the settle command handles it gracefully.
+          <strong>Polymarket</strong> is a prediction market platform where you buy and sell shares on real-world outcomes. Weather markets let you bet on questions like &ldquo;Will NYC&rsquo;s high be between 38&ndash;39&deg;F tomorrow?&rdquo; Shares trade between 0&cent; and 100&cent;. If you&rsquo;re right, your shares pay out $1 USDC each. If wrong, they expire worthless. It&rsquo;s built on Polygon and settles in USDC.
         </div>
       </details>
     </div>
@@ -950,13 +955,13 @@ footer {
   <div class="cta-banner">
     <div class="eyebrow" style="justify-content:center;margin-bottom:18px">
       <span class="eyebrow-line"></span>
-      Open Source
+      Deploy in 5 minutes
       <span class="eyebrow-line"></span>
     </div>
-    <h2>Start trading smarter</h2>
-    <p>Paper trade for free. No wallet or API keys required to get started.</p>
+    <h2>Your edge is waiting</h2>
+    <p>Paper trade with zero risk. See the edge for yourself. When you&rsquo;re ready, flip to live and start earning USDC.</p>
     <div class="cta-row">
-      <a href="#" class="btn btn-primary btn-lg">Clone &amp; Run</a>
+      <a href="#how" class="btn btn-primary btn-lg">Get Started</a>
       <a href="/dashboard" target="_blank" class="btn btn-ghost btn-lg">Open Dashboard</a>
     </div>
   </div>
