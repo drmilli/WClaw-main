@@ -175,9 +175,15 @@ const HTML = `<!DOCTYPE html>
   @media (max-width: 700px)  { .stats-grid { grid-template-columns: repeat(2, 1fr); } }
   .stat-card {
     padding: 18px 20px; position: relative; overflow: hidden;
-    transition: transform 0.2s;
+    transition: transform 0.2s, box-shadow 0.2s;
   }
-  .stat-card:hover { transform: translateY(-2px); }
+  .stat-card:hover { 
+    transform: translateY(-2px);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.5);
+  }
+  .stat-card[onclick]:hover {
+    background: rgba(255,255,255,0.06);
+  }
   .stat-card::before {
     content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
     background: var(--accent-color, rgba(255,255,255,0.1));
@@ -236,6 +242,7 @@ const HTML = `<!DOCTYPE html>
   td { padding: 10px 14px; border-bottom: 1px solid rgba(255,255,255,0.04); vertical-align: middle; }
   tr:last-child td { border-bottom: none; }
   tbody tr:hover { background: rgba(255,255,255,0.03); }
+  tbody tr[onclick]:hover { background: rgba(0,212,255,0.08); }
   .empty-row td { text-align: center; color: var(--dim); padding: 28px; }
 
   /* Badges */
@@ -401,8 +408,9 @@ function edgeCls(e) {
   return '';
 }
 
-function statCard(label, value, valueCls, accentColor) {
-  return '<div class="glass stat-card" style="--accent-color:' + accentColor + '">' +
+function statCard(label, value, valueCls, accentColor, clickAction) {
+  var attrs = clickAction ? ' style="cursor:pointer;--accent-color:' + accentColor + '" onclick="' + clickAction + '"' : ' style="--accent-color:' + accentColor + '"';
+  return '<div class="glass stat-card"' + attrs + '>' +
     '<div class="stat-label">' + label + '</div>' +
     '<div class="stat-value ' + (valueCls || '') + '">' + value + '</div>' +
     '</div>';
@@ -418,8 +426,8 @@ function renderStats(pnl, circuitBroken, consecLosses) {
   var lossCls    = consecLosses > 0 ? 'red' : '';
   var lossLabel  = circuitBroken ? '&#9940; Circuit' : 'Streak Loss';
   document.getElementById('stats').innerHTML =
-    statCard('Total P&amp;L',  fmt(pnl.totalPnl), pnlCls, pnlAccent) +
-    statCard('Win Rate',  pnl.totalTrades > 0 ? (pnl.winRate * 100).toFixed(1) + '%' : 'N/A', '', 'rgba(0,212,255,0.8)') +
+    statCard('Total P&amp;L',  fmt(pnl.totalPnl), pnlCls, pnlAccent, "window.open('https://polymarket.com', '_blank')") +
+    statCard('Win Rate',  pnl.totalTrades > 0 ? (pnl.winRate * 100).toFixed(1) + '%' : 'N/A', '', 'rgba(0,212,255,0.8)', "window.open('https://polymarket.com', '_blank')") +
     statCard('Trades',    String(pnl.totalTrades), '', 'rgba(0,212,255,0.5)') +
     statCard('Open Pos.', String(pnl.openPositions), 'cyan', 'rgba(0,212,255,0.8)') +
     statCard('Exposure',  '$' + pnl.openExposure.toFixed(2), 'yellow', 'rgba(255,214,10,0.8)') +
@@ -555,7 +563,7 @@ function renderSignals(signals) {
   }
   document.getElementById('signals').innerHTML = signals.map(function(s) {
     var edge = s.edge || 0;
-    return '<tr>' +
+    return '<tr style="cursor:pointer" onclick="window.open(\'https://polymarket.com\', \'_blank\')" title="Click to view on Polymarket">' +
       '<td>' + (s.city || '').toUpperCase() + '</td>' +
       '<td>' + (s.date || '') + '</td>' +
       '<td>' + bracketStr(s.bracket_type, s.bracket_min, s.bracket_max) + '</td>' +
