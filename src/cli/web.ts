@@ -565,7 +565,7 @@ function renderSignals(signals) {
     var edge = s.edge || 0;
     var conditionId = s.condition_id || '';
     var marketUrl = conditionId ? ('https://polymarket.com/?condition_id=' + conditionId) : 'https://polymarket.com';
-    return '<tr style="cursor:pointer" onclick="window.open(\'' + marketUrl + '\', \'_blank\')" title="Click to view on Polymarket">' +
+    return '<tr style="cursor:pointer" onclick="window.open(' + JSON.stringify(marketUrl) + ', \'_blank\')" title="Click to view on Polymarket">' +
       '<td>' + (s.city || '').toUpperCase() + '</td>' +
       '<td>' + (s.date || '') + '</td>' +
       '<td>' + bracketStr(s.bracket_type, s.bracket_min, s.bracket_max) + '</td>' +
