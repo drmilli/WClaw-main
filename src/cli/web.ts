@@ -426,8 +426,8 @@ function renderStats(pnl, circuitBroken, consecLosses) {
   var lossCls    = consecLosses > 0 ? 'red' : '';
   var lossLabel  = circuitBroken ? '&#9940; Circuit' : 'Streak Loss';
   document.getElementById('stats').innerHTML =
-    statCard('Total P&amp;L',  fmt(pnl.totalPnl), pnlCls, pnlAccent, "window.open('https://polymarket.com', '_blank')") +
-    statCard('Win Rate',  pnl.totalTrades > 0 ? (pnl.winRate * 100).toFixed(1) + '%' : 'N/A', '', 'rgba(0,212,255,0.8)', "window.open('https://polymarket.com', '_blank')") +
+    statCard('Total P&amp;L',  fmt(pnl.totalPnl), pnlCls, pnlAccent, "window.open('https://polyscan.org', '_blank')") +
+    statCard('Win Rate',  pnl.totalTrades > 0 ? (pnl.winRate * 100).toFixed(1) + '%' : 'N/A', '', 'rgba(0,212,255,0.8)', "window.open('https://polyscan.org', '_blank')") +
     statCard('Trades',    String(pnl.totalTrades), '', 'rgba(0,212,255,0.5)') +
     statCard('Open Pos.', String(pnl.openPositions), 'cyan', 'rgba(0,212,255,0.8)') +
     statCard('Exposure',  '$' + pnl.openExposure.toFixed(2), 'yellow', 'rgba(255,214,10,0.8)') +
@@ -563,7 +563,9 @@ function renderSignals(signals) {
   }
   document.getElementById('signals').innerHTML = signals.map(function(s) {
     var edge = s.edge || 0;
-    return '<tr style="cursor:pointer" onclick="window.open(\'https://polymarket.com\', \'_blank\')" title="Click to view on Polymarket">' +
+    var conditionId = s.condition_id || '';
+    var marketUrl = conditionId ? ('https://polymarket.com/?condition_id=' + conditionId) : 'https://polymarket.com';
+    return '<tr style="cursor:pointer" onclick="window.open(\'' + marketUrl + '\', \'_blank\')" title="Click to view on Polymarket">' +
       '<td>' + (s.city || '').toUpperCase() + '</td>' +
       '<td>' + (s.date || '') + '</td>' +
       '<td>' + bracketStr(s.bracket_type, s.bracket_min, s.bracket_max) + '</td>' +
