@@ -1,7 +1,9 @@
 # WeatherClaw cron schedule
-# scan: every 30 minutes (12 API calls x 48 runs/day = 576/day, well under 10K limit)
-*/30 * * * * cd /app && bun run src/commands/scan.ts >> /app/data/cron.log 2>&1
-# settle: every hour
-0 * * * * cd /app && bun run src/commands/settle.ts >> /app/data/cron.log 2>&1
-# status: 8 AM daily
-0 8 * * * cd /app && bun run src/commands/status.ts >> /app/data/cron.log 2>&1
+# settle: 5 minutes past the hour (runs before scan, avoids SQLite lock contention)
+5 * * * * cd /app && bun run src/commands/settle.ts >> /app/data/cron.log 2>&1
+# scan: every 30 minutes at :15 and :45 (avoids overlap with settle at :05)
+15,45 * * * * cd /app && bun run src/commands/scan.ts >> /app/data/cron.log 2>&1
+# status: 8:10 AM daily (after settle at 8:05)
+10 8 * * * cd /app && bun run src/commands/status.ts >> /app/data/cron.log 2>&1
+# log rotation: midnight, keep last 1MB
+0 0 * * * tail -c 1000000 /app/data/cron.log > /app/data/cron.log.tmp && mv /app/data/cron.log.tmp /app/data/cron.log

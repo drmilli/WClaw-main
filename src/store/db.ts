@@ -9,6 +9,7 @@ export function getDb(): Database {
   if (!db) {
     db = new Database("data/positions.sqlite", { create: true });
     db.run("PRAGMA journal_mode = WAL");
+    db.run("PRAGMA busy_timeout = 5000");
     initSchema(db);
     logger.info("SQLite database initialized");
   }
