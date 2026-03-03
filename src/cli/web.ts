@@ -11,6 +11,17 @@ export function startWebDashboard(): void {
     fetch(req) {
       const url = new URL(req.url);
 
+      // serve the logo from disk so <img src="/logo.png"> works
+      if (url.pathname === "/logo.png") {
+        try {
+          return new Response(Bun.file("logo.png"), {
+            headers: { "Content-Type": "image/png" },
+          });
+        } catch {
+          return new Response("Not found", { status: 404 });
+        }
+      }
+
       if (url.pathname === "/api/data") {
         return Response.json(getDashboardData());
       }
