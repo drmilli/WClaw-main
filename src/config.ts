@@ -13,6 +13,7 @@ export function loadConfig(): AppConfig {
     polymarketApiKey: process.env["POLYMARKET_API_KEY"],
     polymarketApiSecret: process.env["POLYMARKET_API_SECRET"],
     polymarketApiPassphrase: process.env["POLYMARKET_API_PASSPHRASE"],
+    rpcUrl: process.env["POLYGON_RPC_URL"],
   };
 }
 

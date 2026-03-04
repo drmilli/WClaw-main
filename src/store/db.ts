@@ -7,11 +7,14 @@ let db: Database;
 
 export function getDb(): Database {
   if (!db) {
-    db = new Database("data/positions.sqlite", { create: true });
+    const isLive = process.env.MODE === "live";
+    const dbPath = isLive ? "data/positions_live.sqlite" : "data/positions.sqlite";
+    
+    db = new Database(dbPath, { create: true });
     db.run("PRAGMA journal_mode = WAL");
     db.run("PRAGMA busy_timeout = 5000");
     initSchema(db);
-    logger.info("SQLite database initialized");
+    logger.info({ dbPath }, "SQLite database initialized");
   }
   return db;
 }
@@ -20,10 +23,10 @@ export function getDb(): Database {
 
 export function insertSignal(signal: Signal): void {
   getDb().run(
-    `INSERT OR IGNORE INTO signals (id, condition_id, city, date, metric, bracket_type, bracket_min, bracket_max, side, model_probability, market_price, edge, size, kelly, confidence, created_at)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    `INSERT OR IGNORE INTO signals (id, condition_id, slug, city, date, metric, bracket_type, bracket_min, bracket_max, side, model_probability, market_price, edge, size, kelly, confidence, created_at)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     [
-      signal.id, signal.market.conditionId, signal.market.city, signal.market.date,
+      signal.id, signal.market.conditionId, signal.market.slug, signal.market.city, signal.market.date,
       signal.market.metric, signal.market.bracketType, signal.market.bracketMin, signal.market.bracketMax,
       signal.side, signal.modelProbability, signal.marketPrice, signal.edge,
       signal.size, signal.kelly, signal.confidence, signal.createdAt,

@@ -59,6 +59,7 @@ export interface MarketToken {
 export interface ParsedMarket {
   conditionId: string;
   title: string;
+  slug: string;
   city: string;
   date: string; // YYYY-MM-DD
   metric: "high" | "low";
@@ -139,4 +140,5 @@ export interface AppConfig {
   polymarketApiKey?: string;
   polymarketApiSecret?: string;
   polymarketApiPassphrase?: string;
+  rpcUrl?: string;
 }

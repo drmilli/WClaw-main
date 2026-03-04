@@ -77,6 +77,18 @@ function getDashboardData() {
     else break;
   }
 
+  // Extract wallet address from env if available
+  let walletAddress = "";
+  if (process.env.POLYGON_PRIVATE_KEY) {
+    try {
+        const { ethers } = require("ethers");
+        const wallet = new ethers.Wallet(process.env.POLYGON_PRIVATE_KEY);
+        walletAddress = wallet.address;
+    } catch (e) {
+        // ignore if ethers not ready or key invalid
+    }
+  }
+
   return {
     mode: process.env.MODE || "paper",
     pnl,
@@ -86,6 +98,7 @@ function getDashboardData() {
     cityStats,
     consecutiveLosses,
     circuitBroken: consecutiveLosses >= 3,
+    walletAddress
   };
 }
 
@@ -429,17 +442,20 @@ function statCard(label, value, valueCls, accentColor, clickAction) {
 
 // ---- Renderers ----
 
-function renderStats(pnl, circuitBroken, consecLosses) {
+function renderStats(pnl, circuitBroken, consecLosses, walletAddress) {
   var pnlPos  = pnl.totalPnl >= 0;
   var pnlCls  = pnlPos ? 'positive' : 'negative';
   var pnlAccent = pnlPos ? 'rgba(0,255,136,0.8)' : 'rgba(255,68,102,0.8)';
   var lossAccent = consecLosses > 0 ? 'rgba(255,68,102,0.8)' : 'rgba(255,255,255,0.1)';
   var lossCls    = consecLosses > 0 ? 'red' : '';
   var lossLabel  = circuitBroken ? '&#9940; Circuit' : 'Streak Loss';
+  
+  var polyscanUrl = walletAddress ? 'https://polygonscan.com/address/' + walletAddress : 'https://polygonscan.com';
+
   document.getElementById('stats').innerHTML =
-    statCard('Total P&amp;L',  fmt(pnl.totalPnl), pnlCls, pnlAccent, "window.open('https://polyscan.org', '_blank')") +
-    statCard('Win Rate',  pnl.totalTrades > 0 ? (pnl.winRate * 100).toFixed(1) + '%' : 'N/A', '', 'rgba(0,212,255,0.8)', "window.open('https://polyscan.org', '_blank')") +
-    statCard('Trades',    String(pnl.totalTrades), '', 'rgba(0,212,255,0.5)') +
+    statCard('Total P&amp;L',  fmt(pnl.totalPnl), pnlCls, pnlAccent, "window.open('" + polyscanUrl + "', '_blank')") +
+    statCard('Win Rate',  pnl.totalTrades > 0 ? (pnl.winRate * 100).toFixed(1) + '%' : 'N/A', '', 'rgba(0,212,255,0.8)', "window.open('" + polyscanUrl + "', '_blank')") +
+    statCard('Trades',    String(pnl.totalTrades), '', 'rgba(0,212,255,0.5)', "window.open('" + polyscanUrl + "', '_blank')") +
     statCard('Open Pos.', String(pnl.openPositions), 'cyan', 'rgba(0,212,255,0.8)') +
     statCard('Exposure',  '$' + pnl.openExposure.toFixed(2), 'yellow', 'rgba(255,214,10,0.8)') +
     statCard(lossLabel,   String(consecLosses), lossCls, lossAccent);
@@ -575,8 +591,11 @@ function renderSignals(signals) {
   document.getElementById('signals').innerHTML = signals.map(function(s) {
     var edge = s.edge || 0;
     var conditionId = s.condition_id || '';
-    var marketUrl = conditionId ? ('https://polymarket.com/?condition_id=' + conditionId) : 'https://polymarket.com';
-    return '<tr style="cursor:pointer" onclick="window.open(' + JSON.stringify(marketUrl) + ', \'_blank\')" title="Click to view on Polymarket">' +
+    var slug = s.slug || '';
+    var marketUrl = (slug && conditionId) 
+      ? ('https://polymarket.com/event/' + slug + '?tid=' + conditionId)
+      : (conditionId ? ('https://polymarket.com/market/' + conditionId) : 'https://polymarket.com');
+    return '<tr style="cursor:pointer" onclick=\\'window.open(' + JSON.stringify(marketUrl) + ', "_blank")\\' title="Click to view on Polymarket">' +
       '<td>' + (s.city || '').toUpperCase() + '</td>' +
       '<td>' + (s.date || '') + '</td>' +
       '<td>' + bracketStr(s.bracket_type, s.bracket_min, s.bracket_max) + '</td>' +
@@ -624,23 +643,26 @@ function renderPositions(positions) {
 
 // ---- Main load ----
 
-async function load() {
-  try {
-    var d = await fetch('/api/data').then(function(r) { return r.json(); });
+function load() {
+  fetch('/api/data')
+    .then(function(r) { return r.json(); })
+    .then(function(d) {
+      // Mode badge
+      var mb = document.getElementById('modeBadge');
+      if (mb) {
+        mb.textContent = (d.mode || 'paper').toUpperCase();
+        mb.className = 'mode-badge mode-' + (d.mode || 'paper');
+      }
 
-    // Mode badge
-    var mb = document.getElementById('modeBadge');
-    mb.textContent = (d.mode || 'paper').toUpperCase();
-    mb.className = 'mode-badge mode-' + (d.mode || 'paper');
-
-    renderStats(d.pnl, d.circuitBroken, d.consecutiveLosses);
-    drawChart(d.equityCurve);
-    renderCityCards(d.cityStats);
-    renderSignals(d.signals);
-    renderPositions(d.positions);
-  } catch(e) {
-    console.error('Load failed:', e);
-  }
+      renderStats(d.pnl, d.circuitBroken, d.consecutiveLosses, d.walletAddress);
+      drawChart(d.equityCurve);
+      renderCityCards(d.cityStats);
+      renderSignals(d.signals);
+      renderPositions(d.positions);
+    })
+    .catch(function(e) {
+      console.error('Load failed:', e);
+    });
 }
 
 // ---- Chart tooltip (registered once) ----

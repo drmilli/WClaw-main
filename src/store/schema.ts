@@ -5,6 +5,7 @@ export function initSchema(db: Database): void {
     CREATE TABLE IF NOT EXISTS signals (
       id TEXT PRIMARY KEY,
       condition_id TEXT NOT NULL,
+      slug TEXT,
       city TEXT NOT NULL,
       date TEXT NOT NULL,
       metric TEXT NOT NULL,
@@ -21,6 +22,12 @@ export function initSchema(db: Database): void {
       created_at INTEGER NOT NULL
     )
   `);
+
+  try {
+    db.run("ALTER TABLE signals ADD COLUMN slug TEXT");
+  } catch (e) {
+    // Column likely already exists
+  }
 
   db.run(`
     CREATE TABLE IF NOT EXISTS positions (

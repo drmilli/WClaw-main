@@ -49,7 +49,43 @@ async function checkWalletBalance(config: AppConfig): Promise<number> {
 
   try {
     const { ethers } = await import("ethers");
-    const provider = new ethers.JsonRpcProvider("https://polygon-rpc.com");
+    
+    // Robust RPC connection with fallbacks
+    const rpcUrls = [
+      "https://polygon-rpc.com",
+      "https://polygon.drpc.org",
+      "https://1rpc.io/matic",
+      "https://rpc-mainnet.maticvigil.com"
+    ];
+    if (config.rpcUrl) rpcUrls.unshift(config.rpcUrl);
+
+    let provider: any;
+    for (const url of rpcUrls) {
+      try {
+        const p = new ethers.JsonRpcProvider(url);
+        // Force a network check to fail fast if invalid
+        await p._detectNetwork(); 
+        provider = p;
+        logger.info({ url }, "Connected to Polygon RPC");
+        break;
+      } catch (err) {
+        // Try standard getNetwork if _detectNetwork (internal) fails or doesn't exist
+        try {
+            const p = new ethers.JsonRpcProvider(url);
+            await p.getNetwork();
+            provider = p;
+            logger.info({ url }, "Connected to Polygon RPC");
+            break;
+        } catch (e) {
+            logger.warn({ url, err: (err as any).message }, "RPC connection failed");
+        }
+      }
+    }
+
+    if (!provider) {
+        throw new Error("Failed to connect to any Polygon RPC endpoint");
+    }
+
     const wallet = new ethers.Wallet(config.polygonPrivateKey, provider);
 
     // Check MATIC balance for gas

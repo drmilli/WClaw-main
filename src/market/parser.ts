@@ -105,6 +105,7 @@ function buildParsed(
   return {
     conditionId: raw.conditionId,
     title: raw.title,
+    slug: raw.slug,
     city,
     date,
     metric,
