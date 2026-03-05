@@ -1,6 +1,7 @@
 import { getDb } from "../store/db.js";
 import { getPnLSummary } from "../settlement/pnl.js";
 import { logger } from "../logger.js";
+import { join } from "path";
 
 const PORT = 3456;
 
@@ -14,7 +15,8 @@ export function startWebDashboard(): void {
       // serve the logo from disk so <img src="/logo.png"> works
       if (url.pathname === "/logo.png") {
         try {
-          return new Response(Bun.file("logo.png"), {
+          const logoPath = join(import.meta.dir, "../../logo.png");
+          return new Response(Bun.file(logoPath), {
             headers: { "Content-Type": "image/png" },
           });
         } catch {
