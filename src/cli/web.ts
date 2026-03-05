@@ -133,6 +133,7 @@ const HTML = `<!DOCTYPE html>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>WeatherClaw</title>
+<link rel="icon" type="image/png" href="/logo.png">
 <style>
   :root {
     --bg: #050810;
