@@ -7,7 +7,7 @@ let db: Database;
 
 export function getDb(): Database {
   if (!db) {
-    const isLive = process.env.MODE === "live";
+    const isLive = process.env.MODE === "live" || (process.argv[1] && process.argv[1].includes("seed_live"));
     const dbPath = isLive ? "data/positions_live.sqlite" : "data/positions.sqlite";
     
     db = new Database(dbPath, { create: true });
