@@ -97,6 +97,7 @@ export interface Position {
   id: string;
   signalId: string;
   conditionId: string;
+  slug?: string;
   city: string;
   date: string;
   metric: "high" | "low";

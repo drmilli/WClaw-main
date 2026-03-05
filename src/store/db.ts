@@ -38,10 +38,10 @@ export function insertSignal(signal: Signal): void {
 
 export function insertPosition(pos: Position): void {
   getDb().run(
-    `INSERT OR IGNORE INTO positions (id, signal_id, condition_id, city, date, metric, bracket_type, bracket_min, bracket_max, side, entry_price, size, potential_payout, model_probability, edge, status, entry_time, order_id)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    `INSERT OR IGNORE INTO positions (id, signal_id, condition_id, slug, city, date, metric, bracket_type, bracket_min, bracket_max, side, entry_price, size, potential_payout, model_probability, edge, status, entry_time, order_id)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     [
-      pos.id, pos.signalId, pos.conditionId, pos.city, pos.date,
+      pos.id, pos.signalId, pos.conditionId, pos.slug ?? null, pos.city, pos.date,
       pos.metric, pos.bracketType, pos.bracketMin, pos.bracketMax,
       pos.side, pos.entryPrice, pos.size, pos.potentialPayout,
       pos.modelProbability, pos.edge, pos.status, pos.entryTime, pos.orderId ?? null,
@@ -54,6 +54,7 @@ function mapRow(row: any): Position {
     id: row.id,
     signalId: row.signal_id,
     conditionId: row.condition_id,
+    slug: row.slug,
     city: row.city,
     date: row.date,
     metric: row.metric,

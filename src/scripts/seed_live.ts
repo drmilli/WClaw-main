@@ -39,6 +39,7 @@ async function seed() {
       id: randomUUID(),
       signal_id: randomUUID(),
       condition_id: market.conditionId,
+      slug: market.slug,
       city: market.city,
       date: market.date,
       metric: market.metric,
@@ -61,11 +62,11 @@ async function seed() {
 
     db.run(`
       INSERT INTO positions (
-        id, signal_id, condition_id, city, date, metric, bracket_type, 
+        id, signal_id, condition_id, slug, city, date, metric, bracket_type, 
         bracket_min, bracket_max, side, entry_price, size, potential_payout,
         model_probability, edge, status, entry_time, order_id
       ) VALUES (
-        ?, ?, ?, ?, ?, ?, ?,
+        ?, ?, ?, ?, ?, ?, ?, ?,
         ?, ?, ?, ?, ?, ?,
         ?, ?, ?, ?, ?
       )
@@ -73,6 +74,7 @@ async function seed() {
       pos.id,
       pos.signal_id,
       pos.condition_id,
+      pos.slug,
       pos.city,
       pos.date,
       pos.metric,

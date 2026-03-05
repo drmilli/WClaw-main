@@ -107,6 +107,8 @@ function getDashboardData() {
 function mapPos(r: any) {
   return {
     id: r.id,
+    slug: r.slug,
+    conditionId: r.condition_id,
     city: r.city,
     date: r.date,
     metric: r.metric,
@@ -626,7 +628,14 @@ function renderPositions(positions) {
       : '&mdash;';
     var actualHtml = p.actualTemp != null ? p.actualTemp + '&deg;F' : '&mdash;';
     var payoutHtml = p.potentialPayout != null ? '$' + p.potentialPayout.toFixed(2) : '&mdash;';
-    return '<tr title="' + (p.entryTime ? new Date(p.entryTime).toLocaleString() : '') + '">' +
+    
+    var conditionId = p.conditionId || '';
+    var slug = p.slug || '';
+    var marketUrl = (slug && conditionId) 
+      ? ('https://polymarket.com/event/' + slug + '?tid=' + conditionId)
+      : (conditionId ? ('https://polymarket.com/market/' + conditionId) : 'https://polymarket.com');
+
+    return '<tr style="cursor:pointer" onclick=\\'window.open(' + JSON.stringify(marketUrl) + ', "_blank")\\' title="' + (p.entryTime ? new Date(p.entryTime).toLocaleString() : '') + '">' +
       '<td>' + (p.city || '').toUpperCase() + '</td>' +
       '<td>' + (p.date || '') + '</td>' +
       '<td>' + bracketStr(p.bracketType, p.bracketMin, p.bracketMax) + '</td>' +

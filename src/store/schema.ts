@@ -29,11 +29,18 @@ export function initSchema(db: Database): void {
     // Column likely already exists
   }
 
+  try {
+    db.run("ALTER TABLE positions ADD COLUMN slug TEXT");
+  } catch (e) {
+    // Column likely already exists
+  }
+
   db.run(`
     CREATE TABLE IF NOT EXISTS positions (
       id TEXT PRIMARY KEY,
       signal_id TEXT NOT NULL,
       condition_id TEXT NOT NULL,
+      slug TEXT,
       city TEXT NOT NULL,
       date TEXT NOT NULL,
       metric TEXT NOT NULL,
